@@ -1,0 +1,161 @@
+CursorProject1
+sf org login web -s -a myDev
+sf org list
+sf org login web -s -a DEFAULT_TARGET_ORG
+
+
+Insert three New Fields on Account Object.
+
+Health_Score__c (Number, precision 3,scale 0, label Health Score)
+
+Revenue_Tier__c (Formula, return type text, label Revenue Tier) with formula: 
+		if(AnnualRevenue >=1000000, “Gold”,
+                If(AnnualRevenue>= 250000, “Silver”, “Bronze”))
+
+Create Last_90_Day_Wins__c (Currency, precision 16, scale 2, label Last 90 Day Wins)
+
+
+Create a new field on the Opportunity Object: 
+    Discount__c (Percent, precision 3, scale 0, label Discount)
+
+Create a new validation rule for this field: 
+Formula : Discount__c >.30
+Error Message: Discount cannot exceed 30%
+Error displayed on field: Discount__c 
+
+Create a record-triggered flow
+Trigger: After Save on Account
+Entry: Always
+Logic: if Health_Score__c <40, create a task for Record.ownerId with Subject Proactive Check-in due in 2 days, Comment Health Score fell below 40. Please reach out. 
+
+Write an Apex Service Class that calculates and updates on Account Health Score
+Class Name:  AccountHealthService
+Visibility and Secuirty:  public with sharing
+Method Signature:
+     public static void updateHealthScores (Set <Id> accountIds)
+
+
+RevenueScore  from AnnualRevenue
+RecentWinsScore from Last_90_Day_Wins__c(currency)
+Scoring rules (spell this out exactly):
+RevenueScore (based on AnnualRevenue):
+If AnnualRevenue is null or 0 → 0 points
+If AnnualRevenue > 0 and < 250,000 → 10 points
+If AnnualRevenue >= 250,000 and < 1,000,000 → 30 points
+If AnnualRevenue >= 1,000,000 → 50 points
+RecentWinsScore (based on Last_90_Day_Wins__c):
+If Last_90_Day_Wins__c is null or 0 → 0 points
+If Last_90_Day_Wins__c > 0 and < 25,000 → 10 points
+If Last_90_Day_Wins__c >= 25,000 and < 100,000 → 30 points
+If Last_90_Day_Wins__c >= 100,000 → 50 points
+Final score:
+Health_Score__c = RevenueScore + RecentWinsScore
+
+
+
+Now write a test class AccountHealthServiceTest that:
+Inserts four Accounts covering each revenue bucket and each wins bucket 
+Calls AccountHealthService.updateHealthScores(new Set<Id>{…}).
+Asserts the exact Health_Score__c for several representative accounts (e.g., 50+50=100, 30+10=40, 10+0=10, 0+0=0).
+Uses no seeAllData=true.
+Achieves ≥ 90% coverage for the service class.
+
+
+Implement a bulk-safe Opportunity trigger and trigger handler that rolls up Closed Won amounts from the last 90 days to the parent Account field Last_90_Day_Wins__c(Currency), then recalculates account health via AccountHealthService.updateHealthScores(…)
+
+
+
+
+Create a test class for this OpportunityTriggerHandler.
+Happy path:
+Insert an Account (e.g., BigCo) with some AnnualRevenue.
+Insert 3 Opportunities:
+Closed Won, CloseDate = Date.today().addDays(-5), Amount = 80,000 → counts
+Closed Won, CloseDate = Date.today().addDays(-100), Amount = 50,000 → does NOT count
+Prospecting, CloseDate = Date.today().addDays(-3), Amount = 20,000 → does NOT count
+
+Edge cases / bulk:
+Insert another Account with no Closed Won in last 90 days; ensure it gets 0.
+Insert multiple Opportunities across two Accounts to validate bulk aggregation works (sums per account).
+Don’t use SeeAllData=true.
+Aim for ≥ 85% coverage across the handler and trigger.
+
+
+Create an LWC for Contact search.
+HTML: input for last name + Search button + datatable (Name, Email)
+JS: calls @salesforce/apex/ContactController.searchContacts(lastName) and sets data
+Apex ContactController (with sharing), @AuraEnabled(cacheable=true), returns Id, Name, Email from Contact WHERE LastName LIKE ‘%key%’, LIMIT 50.
+
+
+
+Write a simple Apex class that multiplies two numbers and returns the result.
+
+Can you please, in the most detailed manner possible, create an Apex class that performs a mathematical operation specifically multiplication between two integers, ensuring you include all necessary Salesforce best practices such as proper class declaration with ‘public with sharing’, inline comments for every single line of code to make it extremely beginner friendly, a constructor even if it is empty, an example usage snippet inside a comment block, and proper exception handling even though multiplying two integers does not normally throw errors. Also explain the code afterward in plain English.
+
+
+
+1. **NEVER put SOQL/DML inside loops** - Always bulkify your code
+2. **Use selective SOQL queries** - Avoid non-selective patterns like !=, <>, or LIKE with leading wildcards
+3. **Use collections for DML operations** - Process records in batches, not individually
+4. **Implement proper exception handling** - Catch specific exception types
+5. **Avoid hardcoded limits** - Use dynamic SOQL limits
+6. **Enforce CRUD/FLS security** - Use WITH SECURITY_ENFORCED and Security.stripInaccessible()
+7. **Avoid CPU-intensive operations** - Prevent infinite loops and complex operations
+8. **Always perform null checks** - Prevent NullPointerExceptions
+9. **Control trigger recursion** - Use static boolean flags or trigger frameworks
+10. **🚨 MANDATORY: Follow DET_ naming conventions** - ALL Apex classes and files MUST use DET_ prefix
+
+
+Commit AccountHealthService and its corresponding  test class to the CursorProject4 repository.
+List open pull requests in cursorProject4 repository
+Show me the most recent commits on the main branch in CursorProject4 repository.
+Open and display the contents of README.md from the main branch in CursorProject4 repository.
+
+Create a new issue in CursorProject4 titled “Add AccountHealthService Apex class” with body “We need a service to calculate Account health based on revenue and last 90-day wins.
+List all open issues in CursorProject4
+Add a comment to issue #1 in CursorProject4 that says “I’ll start working on this now.
+Close issue #1 in CursorProject4 with comment “Feature implemented and merged.
+
+# Code Review Checklist
+## Overview
+Comprehensive checklist for conducting thorough code reviews to ensure quality, security, and maintainability.
+## Review Categories
+### Functionality
+- [ ] Code does what it's supposed to do
+- [ ] Edge cases are handled
+- [ ] Error handling is appropriate
+- [ ] No obvious bugs or logic errors
+### Code Quality
+- [ ] Code is readable and well-structured
+- [ ] Functions are small and focused
+- [ ] Variable names are descriptive
+- [ ] No code duplication
+- [ ] Follows project conventions
+### Security
+- [ ] No obvious security vulnerabilities
+- [ ] Input validation is present
+- [ ] Sensitive data is handled properly
+- [ ] No hardcoded secrets
+
+
+
+
+
+
+
+
+| Object      | Field             | Type         | Description                 |
+| ----------- | ----------------- | ------------ | --------------------------- |
+
+| Opportunity | Days_To_Close__c  | Formula      | CloseDate - TODAY()      |
+
+
+Create an Apex class called OpportunityScoringService with a method updateScores(Set<Id> oppIds) that calculates Opportunity.Priority_Score__c as:
+(0.5 × Confidence__c) + (0.3 × Stage Weight) . Use SOQL to fetch data efficiently.
+
+
+Write a trigger handler that calls OpportunityScoringService.updateScores() whenever Opportunity stage, amount, or confidence changes.
+
+Create an LWC called opportunityPriorityBoard that displays a table of top 10 Opportunities with columns: Name, Stage, Priority Score, Amount, and Close Date. Include a refresh button.
+
+
