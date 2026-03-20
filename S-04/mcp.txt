@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    "Salesforce DX": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@salesforce/mcp",
+        "--orgs",
+        "DeepikaCursorOrg1",
+        "--toolsets",
+        "all"
+      ]
+    }
+  
+  }
+}

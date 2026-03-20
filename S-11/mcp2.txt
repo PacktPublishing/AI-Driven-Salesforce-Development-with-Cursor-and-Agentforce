@@ -1,0 +1,53 @@
+{
+  "mcpServers": {
+    "https://github.com/salesforcecli/mcp": {
+      "disabled": false,
+      "timeout": 600,
+      "type": "stdio",
+      "command": "/usr/local/lib/sf/bin/node",
+      "args": [
+        "/Users/chandan.agarwal/Library/Application Support/Code/User/globalStorage/salesforce.salesforcedx-einstein-gpt/MCP/a4d-mcp-wrapper.js",
+        "@salesforce/mcp@latest",
+        "--orgs",
+        "ALLOW_ALL_ORGS",
+        "--tools",
+        "get_username,deploy_metadata,retrieve_metadata,run_apex_test,run_soql_query,guide_lwc_development,orchestrate_lwc_component_creation,guide_lwc_accessibility,create_lwc_component,assign_permission_set,list_all_orgs,list_devops_center_projects,list_devops_center_work_items,create_devops_center_pull_request,promote_devops_center_work_item,commit_devops_center_work_item,check_devops_center_commit_status,checkout_devops_center_work_item,run_code_analyzer,describe_code_analyzer_rule,detect_devops_center_merge_conflict,resolve_devops_center_merge_conflict"
+      ]
+    },
+    "playwright": {
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    "salesforce-dx": {
+      "disabled": true,
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@salesforce/mcp",
+        "--orgs",
+        "DEFAULT_TARGET_ORG",
+        "--toolsets",
+        "all",
+        "--allow-non-ga-tools"
+      ]
+    },
+    "github": {
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      }
+    }
+  }
+}
